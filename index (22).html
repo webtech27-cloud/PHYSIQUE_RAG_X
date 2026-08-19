@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHYSIQUE_RAG-X — Build. Train. Transform.</title>
+<meta name="description" content="PHYSIQUE_RAG-X gym — strength, hypertrophy, fat-loss and athletic performance training. Join the 100-Day Transformation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#08090a;
+    --charcoal:#141517;
+    --surface:#1b1c1f;
+    --surface-2:#232427;
+    --steel:#c7ccd3;
+    --steel-dim:#7a7e86;
+    --yellow:#f4c400;
+    --yellow-deep:#c99e00;
+    --text:#f1f0ec;
+    --text-dim:#9b9b9c;
+    --line: rgba(199,204,211,0.14);
+    --radius: 2px;
+    --ease: cubic-bezier(.16,.84,.24,1);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--black);
+    color:var(--text);
+    font-family:'Barlow', sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  button{font-family:inherit; cursor:pointer;}
+
+  h1,h2,h3,h4{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.01em;
+    font-weight:700;
+    line-height:1.05;
+  }
+  .eyebrow{
+    font-family:'Barlow Condensed', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.32em;
+    font-size:0.78rem;
+    font-weight:600;
+    color:var(--yellow);
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:26px; height:2px;
+    background:var(--yellow);
+    display:inline-block;
+    transform:skewX(-20deg);
+  }
+  .wrap{
+    max-width:1240px;
+    margin:0 auto;
+    padding:0 clamp(20px,5vw,60px);
+  }
+  .sec{ padding:120px 0; position:relative; }
+  .sec-head{ max-width:640px; margin-bottom:56px; }
+  .sec-head h2{ font-size:clamp(2.1rem,4.4vw,3.4rem); margin-top:14px; }
+  .sec-head p{ color:var(--text-dim); font-size:1.05rem; margin-top:16px; line-height:1.6; max-width:520px;}
+
+  /* diagonal X divider - signature element */
+  .x-divider{
+    position:relative;
+    height:64px;
+    width:100%;
+    overflow:hidden;
+  }
+  .x-divider svg{ width:100%; height:100%; display:block; }
+
+  ::selection{ background:var(--yellow); color:#111; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    padding:18px 0;
+    transition:background .35s var(--ease), padding .35s var(--ease), border-color .35s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{
+    background:rgba(8,9,10,0.92);
+    backdrop-filter:blur(10px);
+    padding:12px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand img{ height:44px; width:auto; transition:height .35s var(--ease); }
+  header.scrolled .brand img{ height:36px; }
+  .brand-text{ font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:.02em; font-size:1.05rem; }
+  .brand-text span{ color:var(--yellow); }
+  nav.primary-nav ul{ display:flex; gap:34px; }
+  nav.primary-nav a{
+    font-family:'Barlow Condensed',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    font-size:.86rem;
+    font-weight:600;
+    color:var(--steel);
+    position:relative;
+    padding:4px 0;
+  }
+  nav.primary-nav a::after{
+    content:'';
+    position:absolute; left:0; bottom:0; height:2px; width:0;
+    background:var(--yellow);
+    transition:width .3s var(--ease);
+  }
+  nav.primary-nav a:hover::after{ width:100%; }
+  .nav-cta{ display:flex; align-items:center; gap:16px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'Barlow Condensed',sans-serif;
+    text-transform:uppercase; letter-spacing:.14em; font-weight:700;
+    font-size:.85rem;
+    padding:13px 26px;
+    border:1px solid var(--yellow);
+    background:transparent;
+    color:var(--yellow);
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    transition:transform .25s var(--ease), background .25s var(--ease), color .25s var(--ease);
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn-solid{ background:var(--yellow); color:#101010; }
+  .btn-solid:hover{ background:#fff; border-color:#fff; }
+  .btn-ghost:hover{ background:var(--yellow); color:#101010; }
+  .btn-sm{ padding:10px 18px; font-size:.78rem; }
+
+  .burger{ display:none; width:30px; height:22px; position:relative; flex-direction:column; justify-content:space-between; background:none; border:0; }
+  .burger span{ display:block; height:2px; width:100%; background:var(--steel); transition:.3s var(--ease); }
+  .burger.open span:nth-child(1){ transform:translateY(10px) rotate(45deg); }
+  .burger.open span:nth-child(2){ opacity:0; }
+  .burger.open span:nth-child(3){ transform:translateY(-10px) rotate(-45deg); }
+
+  .mobile-nav{
+    position:fixed; inset:0; background:rgba(8,9,10,0.98);
+    z-index:999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;
+    transform:translateY(-100%); transition:transform .45s var(--ease);
+  }
+  .mobile-nav.open{ transform:translateY(0); }
+  .mobile-nav a{ font-family:'Oswald',sans-serif; font-size:1.6rem; text-transform:uppercase; letter-spacing:.04em; color:var(--steel); }
+  .mobile-nav a:hover{ color:var(--yellow); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100svh;
+    display:flex; align-items:center;
+    position:relative;
+    padding:150px 0 90px;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 18%, rgba(244,196,0,0.10), transparent 60%),
+      linear-gradient(180deg, #08090a 0%, #0c0d0f 60%, #08090a 100%);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(199,204,211,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(199,204,211,0.05) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 60% 60% at 50% 30%, black, transparent 75%);
+    pointer-events:none;
+  }
+  .hero-x{
+    position:absolute; top:-10%; right:-8%;
+    width:56vw; max-width:820px; opacity:.14;
+    filter:blur(.5px);
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative; z-index:2;
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+    width:100%;
+  }
+  .hero-logo{
+    width:min(560px, 82vw);
+    margin:0 auto 6px;
+    animation:heroIn 1s var(--ease) both;
+  }
+  .hero-sub{
+    font-family:'Barlow Condensed',sans-serif;
+    text-transform:uppercase; letter-spacing:.5em; font-size:.82rem;
+    color:var(--steel-dim); font-weight:600;
+    animation:heroIn 1s var(--ease) .15s both;
+    margin-top:-10px;
+  }
+  .hero h1{
+    font-size:clamp(2.4rem,6vw,4.6rem);
+    margin-top:26px; max-width:900px;
+    animation:heroIn 1s var(--ease) .25s both;
+  }
+  .hero h1 em{ font-style:normal; color:var(--yellow); }
+  .hero p.lead{
+    margin-top:22px; max-width:560px; color:var(--text-dim); font-size:1.12rem; line-height:1.65;
+    animation:heroIn 1s var(--ease) .35s both;
+  }
+  .hero-actions{ display:flex; gap:18px; margin-top:40px; flex-wrap:wrap; justify-content:center; animation:heroIn 1s var(--ease) .45s both; }
+  @keyframes heroIn{ from{ opacity:0; transform:translateY(24px);} to{ opacity:1; transform:translateY(0);} }
+
+  .hero-strip{
+    margin-top:70px; width:100%;
+    display:grid; grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--line);
+    animation:heroIn 1s var(--ease) .55s both;
+  }
+  .hero-strip .cell{
+    padding:22px 10px; text-align:center; border-right:1px solid var(--line);
+  }
+  .hero-strip .cell:last-child{ border-right:none; }
+  .hero-strip .num{ font-family:'Oswald',sans-serif; font-size:clamp(1.5rem,3vw,2.1rem); color:var(--yellow); font-weight:700; }
+  .hero-strip .lbl{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.12em; font-size:.72rem; color:var(--steel-dim); margin-top:4px; }
+
+  .scroll-cue{
+    position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    color:var(--steel-dim); font-family:'Barlow Condensed',sans-serif; letter-spacing:.3em; font-size:.68rem; text-transform:uppercase;
+  }
+  .scroll-cue .line{ width:1px; height:36px; background:linear-gradient(var(--yellow), transparent); animation:scrollDown 1.8s infinite; }
+  @keyframes scrollDown{ 0%{ transform:scaleY(0); transform-origin:top;} 50%{ transform:scaleY(1); transform-origin:top;} 50.01%{ transform-origin:bottom;} 100%{ transform:scaleY(0); transform-origin:bottom; } }
+
+  /* reveal on scroll */
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+  .stagger > *{ transition-delay:calc(var(--i,0) * 90ms); }
+
+  /* ---------- ABOUT ---------- */
+  .about{ background:var(--charcoal); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .about-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:70px; align-items:center; }
+  .about-copy p{ color:var(--text-dim); font-size:1.05rem; line-height:1.75; margin-top:18px; }
+  .about-list{ margin-top:30px; display:grid; gap:16px; }
+  .about-list li{ display:flex; gap:14px; align-items:flex-start; font-size:.98rem; color:var(--steel); }
+  .about-list .mark{ color:var(--yellow); font-family:'Oswald',sans-serif; font-weight:700; flex:none; }
+  .about-panel{
+    position:relative;
+    border:1px solid var(--line);
+    padding:38px;
+    background:linear-gradient(155deg, var(--surface), var(--surface-2));
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 34px),calc(100% - 34px) 100%,0 100%);
+  }
+  .about-panel .quote{ font-family:'Oswald',sans-serif; font-size:1.3rem; line-height:1.4; color:var(--text); }
+  .about-panel .quote span{ color:var(--yellow); }
+  .about-panel .attrib{ margin-top:22px; font-family:'Barlow Condensed',sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--steel-dim); font-size:.8rem; }
+
+  /* ---------- FOUNDER ---------- */
+  .founder{ background:var(--charcoal); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .founder-grid{ display:grid; grid-template-columns:0.8fr 1.2fr; gap:70px; align-items:center; }
+  .founder-photo-wrap{ position:relative; }
+  .founder-photo{
+    position:relative;
+    border:1px solid var(--line);
+    aspect-ratio:4/5;
+    overflow:hidden;
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 40px),calc(100% - 40px) 100%,0 100%);
+    background:linear-gradient(155deg, var(--surface), var(--surface-2));
+  }
+  .founder-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .founder-photo .placeholder{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    color:var(--steel-dim); text-align:center; padding:30px;
+  }
+  .founder-photo .placeholder .mono{
+    width:76px; height:76px; border:1px solid var(--yellow); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; color:var(--yellow);
+    font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:700;
+  }
+  .founder-photo .placeholder p{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.12em; font-size:.78rem; }
+  .founder-tag{
+    position:absolute; bottom:20px; left:-1px;
+    background:var(--yellow); color:#101010;
+    font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-weight:700; font-size:.76rem;
+    padding:8px 16px;
+  }
+  .founder-copy h3{ font-size:clamp(1.7rem,3vw,2.3rem); }
+  .founder-copy .role{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.16em; color:var(--yellow); font-size:.86rem; font-weight:600; margin-top:10px; }
+  .founder-copy .bio{ margin-top:22px; font-family:'Oswald',sans-serif; text-transform:none; font-weight:400; font-size:1.15rem; line-height:1.5; color:var(--text); max-width:540px; }
+  .founder-copy .sign{ margin-top:26px; color:var(--text-dim); font-size:.92rem; line-height:1.6; max-width:520px; }
+  .founder-stats{ display:flex; gap:36px; margin-top:32px; flex-wrap:wrap; }
+  .founder-stats div{ }
+  .founder-stats .n{ font-family:'Oswald',sans-serif; font-size:1.5rem; color:var(--yellow); font-weight:700; }
+  .founder-stats .l{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:.72rem; color:var(--steel-dim); margin-top:2px; }
+
+  /* ---------- STATS ---------- */
+  .stats{ background:var(--black); }
+  .stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .stat-cell{ background:var(--black); padding:44px 26px; text-align:center; }
+  .stat-cell .n{ font-family:'Oswald',sans-serif; font-size:clamp(2.4rem,5vw,3.6rem); color:var(--yellow); font-weight:700; }
+  .stat-cell .l{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.14em; color:var(--steel-dim); font-size:.82rem; margin-top:8px; }
+
+  /* ---------- PROGRAMS ---------- */
+  .programs{ background:var(--charcoal); }
+  .prog-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+  .prog-card{
+    background:var(--surface); border:1px solid var(--line);
+    padding:32px 26px; position:relative; overflow:hidden;
+    transition:transform .35s var(--ease), border-color .35s var(--ease), background .35s var(--ease);
+  }
+  .prog-card:hover{ transform:translateY(-8px); border-color:var(--yellow); background:var(--surface-2); }
+  .prog-card .idx{ font-family:'Oswald',sans-serif; font-size:.85rem; color:var(--yellow-deep); letter-spacing:.1em; }
+  .prog-card h3{ font-size:1.3rem; margin-top:14px; }
+  .prog-card p{ color:var(--text-dim); font-size:.92rem; line-height:1.6; margin-top:12px; }
+  .prog-card .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .prog-card .tags span{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; font-size:.68rem; letter-spacing:.08em; color:var(--steel); border:1px solid var(--line); padding:4px 9px; }
+  .prog-card .icon{
+    position:absolute; right:-14px; top:-14px; width:64px; height:64px;
+    border:1px solid var(--line); transform:rotate(45deg);
+    opacity:.5;
+  }
+
+  /* ---------- 100 DAY ---------- */
+  .transform-sec{ background:var(--black); }
+  .phase-track{ position:relative; margin-top:20px; }
+  .phase-track::before{
+    content:''; position:absolute; left:0; right:0; top:26px; height:1px;
+    background:linear-gradient(90deg, var(--yellow), var(--line) 4%, var(--line) 96%, var(--yellow));
+  }
+  .phase-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+  .phase{ position:relative; padding-top:56px; }
+  .phase .dot{
+    position:absolute; top:14px; left:0; width:26px; height:26px;
+    background:var(--black); border:2px solid var(--yellow); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Oswald',sans-serif; font-size:.7rem; color:var(--yellow);
+  }
+  .phase .days{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.14em; color:var(--yellow); font-size:.78rem; font-weight:600; }
+  .phase h4{ font-size:1.15rem; margin-top:8px; }
+  .phase p{ color:var(--text-dim); font-size:.92rem; margin-top:10px; line-height:1.6; }
+
+  /* ---------- MEMBERSHIP ---------- */
+  .membership{ background:var(--charcoal); }
+  .plans-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; align-items:stretch; }
+  .plan{
+    background:var(--surface); border:1px solid var(--line); padding:36px 28px;
+    display:flex; flex-direction:column;
+    transition:transform .35s var(--ease), border-color .35s var(--ease);
+  }
+  .plan:hover{ transform:translateY(-6px); }
+  .plan.featured{ background:linear-gradient(165deg, #201b06, var(--surface) 55%); border-color:var(--yellow); position:relative; }
+  .plan.featured::after{
+    content:'MOST POPULAR'; position:absolute; top:-1px; right:-1px;
+    background:var(--yellow); color:#111; font-family:'Barlow Condensed',sans-serif;
+    font-size:.66rem; letter-spacing:.12em; font-weight:700; padding:6px 12px;
+  }
+  .plan h3{ font-size:1.1rem; }
+  .plan .price{ font-family:'Oswald',sans-serif; font-size:2.4rem; color:var(--yellow); margin-top:14px; }
+  .plan .price sup{ font-size:.95rem; color:var(--steel-dim); font-weight:400; }
+  .plan .per{ color:var(--steel-dim); font-size:.8rem; margin-top:-4px; }
+  .plan ul{ margin-top:22px; display:grid; gap:12px; flex:1; }
+  .plan li{ font-size:.88rem; color:var(--steel); display:flex; gap:10px; }
+  .plan li::before{ content:'—'; color:var(--yellow); flex:none; }
+  .plan .btn{ margin-top:26px; justify-content:center; width:100%; }
+
+  /* ---------- RESULTS ---------- */
+  .results{ background:var(--black); }
+  .results-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  .result-card{
+    border:1px solid var(--line); background:var(--surface);
+    position:relative;
+  }
+  .result-visual{
+    height:220px; position:relative; overflow:hidden;
+    background:
+      repeating-linear-gradient(115deg, rgba(244,196,0,0.10) 0 2px, transparent 2px 26px),
+      linear-gradient(135deg, #232427, #101113);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .result-visual .split{ position:absolute; inset:0; display:flex; }
+  .result-visual .split div{ flex:1; }
+  .result-visual .split .before{ background:linear-gradient(180deg,#1b1c1f,#101113); }
+  .result-visual .split .after{ background:linear-gradient(180deg,#232009,#141101); }
+  .result-visual .vs{
+    position:relative; z-index:2; font-family:'Oswald',sans-serif; color:var(--yellow); font-size:1.6rem; font-weight:700;
+    width:44px; height:44px; border:2px solid var(--yellow); border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:var(--black);
+  }
+  .result-body{ padding:22px 24px; }
+  .result-body .name{ font-family:'Oswald',sans-serif; font-size:1.05rem; }
+  .result-body .meta{ color:var(--yellow); font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:.76rem; margin-top:4px; }
+  .result-body p{ color:var(--text-dim); font-size:.88rem; margin-top:10px; line-height:1.55; }
+
+  /* ---------- SCHEDULE ---------- */
+  .schedule{ background:var(--charcoal); }
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); }
+  table.sched{ width:100%; border-collapse:collapse; min-width:760px; }
+  table.sched th, table.sched td{ padding:16px 14px; text-align:left; border-bottom:1px solid var(--line); border-right:1px solid var(--line); font-size:.86rem; }
+  table.sched th:last-child, table.sched td:last-child{ border-right:none; }
+  table.sched thead th{
+    font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:.74rem;
+    color:var(--black); background:var(--yellow); font-weight:700;
+  }
+  table.sched tbody th{ color:var(--yellow); font-family:'Oswald',sans-serif; font-weight:600; font-size:.8rem; white-space:nowrap; }
+  table.sched tbody tr:hover{ background:var(--surface-2); }
+  table.sched td{ color:var(--steel); }
+  table.sched td.rest{ color:var(--steel-dim); font-style:italic; }
+
+  /* ---------- TESTIMONIALS ---------- */
+  .testimonials{ background:var(--black); }
+  .tst-wrap{ position:relative; max-width:760px; margin:0 auto; text-align:center; }
+  .tst-slide{ display:none; }
+  .tst-slide.active{ display:block; animation:heroIn .6s var(--ease) both; }
+  .tst-stars{ color:var(--yellow); letter-spacing:4px; font-size:1.1rem; }
+  .tst-slide p.txt{ font-family:'Oswald',sans-serif; font-weight:400; text-transform:none; font-size:clamp(1.2rem,2.6vw,1.6rem); line-height:1.5; margin-top:20px; color:var(--text); }
+  .tst-who{ margin-top:24px; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.12em; color:var(--steel-dim); font-size:.82rem; }
+  .tst-who b{ color:var(--yellow); }
+  .tst-dots{ display:flex; justify-content:center; gap:10px; margin-top:34px; }
+  .tst-dots button{ width:9px; height:9px; border-radius:50%; border:1px solid var(--steel-dim); background:transparent; padding:0; }
+  .tst-dots button.active{ background:var(--yellow); border-color:var(--yellow); }
+
+  /* ---------- GALLERY ---------- */
+  .gallery{ background:var(--charcoal); }
+  .gal-grid{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:150px; gap:10px; }
+  .gal-item{
+    position:relative; overflow:hidden; border:1px solid var(--line);
+    display:flex; align-items:flex-end; padding:14px;
+  }
+  .gal-item span{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.1em; font-size:.72rem; color:var(--steel); position:relative; z-index:2; }
+  .gal-item::before{ content:''; position:absolute; inset:0; background:linear-gradient(160deg, var(--g1,#232427), var(--g2,#101113)); transition:transform .5s var(--ease); }
+  .gal-item::after{ content:''; position:absolute; inset:0; background:linear-gradient(0deg, rgba(0,0,0,.65), transparent 60%); }
+  .gal-item:hover::before{ transform:scale(1.08); }
+  .gal-item.tall{ grid-row:span 2; }
+  .gal-item.wide{ grid-column:span 2; }
+
+  /* ---------- FAQ ---------- */
+  .faq{ background:var(--black); }
+  .faq-list{ max-width:820px; }
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-q{
+    width:100%; background:none; border:0; text-align:left;
+    display:flex; justify-content:space-between; align-items:center; gap:20px;
+    padding:24px 4px; font-family:'Oswald',sans-serif; font-size:1.05rem; color:var(--text);
+  }
+  .faq-q .plus{ font-family:'Barlow Condensed',sans-serif; color:var(--yellow); font-size:1.4rem; flex:none; transition:transform .35s var(--ease); }
+  .faq-item.open .faq-q .plus{ transform:rotate(45deg); }
+  .faq-a{ max-height:0; overflow:hidden; transition:max-height .4s var(--ease); }
+  .faq-a p{ color:var(--text-dim); padding:0 4px 24px; font-size:.94rem; line-height:1.65; max-width:640px; }
+
+  /* ---------- CONTACT ---------- */
+  .contact{ background:var(--charcoal); border-top:1px solid var(--line); }
+  .contact-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:70px; }
+  .contact-info .row{ display:flex; gap:16px; align-items:flex-start; margin-top:26px; }
+  .contact-info .row .ic{
+    width:42px; height:42px; border:1px solid var(--yellow); flex:none;
+    display:flex; align-items:center; justify-content:center; color:var(--yellow);
+    clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+  }
+  .contact-info .row h4{ font-size:.78rem; text-transform:uppercase; letter-spacing:.14em; color:var(--steel-dim); font-family:'Barlow Condensed',sans-serif; }
+  .contact-info .row a, .contact-info .row span{ display:block; margin-top:4px; font-size:1rem; color:var(--text); }
+  .contact-info .row a:hover{ color:var(--yellow); }
+  .contact-social{ display:flex; gap:12px; margin-top:36px; }
+  .contact-social a{
+    width:40px; height:40px; border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    font-family:'Barlow Condensed',sans-serif; font-size:.72rem; letter-spacing:.06em; color:var(--steel);
+  }
+  .contact-social a:hover{ border-color:var(--yellow); color:var(--yellow); }
+
+  form.enquiry{ display:grid; gap:18px; }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .field label{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.12em; font-size:.74rem; color:var(--steel-dim); display:block; margin-bottom:8px; }
+  .field input, .field select, .field textarea{
+    width:100%; background:var(--surface); border:1px solid var(--line); color:var(--text);
+    padding:13px 14px; font-family:'Barlow',sans-serif; font-size:.95rem;
+    transition:border-color .25s var(--ease);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--yellow); }
+  .field textarea{ resize:vertical; min-height:110px; }
+  .form-foot{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:6px; }
+  .form-note{ font-size:.8rem; color:var(--steel-dim); }
+  .form-status{ font-size:.85rem; color:var(--yellow); min-height:1.2em; }
+
+  /* ---------- FOOTER ---------- */
+  footer{ background:var(--black); border-top:1px solid var(--line); padding:60px 0 30px; }
+  .foot-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:40px; }
+  .foot-brand{ display:flex; align-items:center; gap:12px; }
+  .foot-brand img{ height:42px; }
+  .foot-tag{ color:var(--text-dim); font-size:.88rem; margin-top:16px; line-height:1.6; max-width:280px; }
+  .foot-col h5{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:.14em; font-size:.78rem; color:var(--yellow); margin-bottom:16px; }
+  .foot-col ul{ display:grid; gap:10px; }
+  .foot-col a{ color:var(--steel); font-size:.9rem; }
+  .foot-col a:hover{ color:var(--yellow); }
+  .foot-bottom{ display:flex; justify-content:space-between; align-items:center; margin-top:56px; padding-top:24px; border-top:1px solid var(--line); flex-wrap:wrap; gap:12px; }
+  .foot-bottom p{ color:var(--steel-dim); font-size:.78rem; }
+
+  /* ---------- WHATSAPP FLOAT ---------- */
+  .wa-float{
+    position:fixed; bottom:24px; right:24px; z-index:900;
+    width:58px; height:58px; border-radius:50%; background:#25D366;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+    transition:transform .3s var(--ease);
+  }
+  .wa-float:hover{ transform:scale(1.08); }
+  .wa-float svg{ width:28px; height:28px; }
+
+  @media (max-width:1000px){
+    .about-grid{ grid-template-columns:1fr; gap:40px; }
+    .prog-grid{ grid-template-columns:repeat(2,1fr); }
+    .plans-grid{ grid-template-columns:repeat(2,1fr); }
+    .phase-row{ grid-template-columns:repeat(2,1fr); row-gap:40px; }
+    .phase-track::before{ display:none; }
+    .stats-grid{ grid-template-columns:repeat(2,1fr); }
+    .contact-grid{ grid-template-columns:1fr; gap:50px; }
+    .gal-grid{ grid-template-columns:repeat(3,1fr); }
+    .foot-grid{ grid-template-columns:1fr 1fr; }
+    .hero-strip{ grid-template-columns:repeat(2,1fr); }
+    .hero-strip .cell:nth-child(2){ border-right:none; }
+  }
+  @media (max-width:760px){
+    nav.primary-nav, .nav-cta .btn-ghost{ display:none; }
+    .burger{ display:flex; }
+    .sec{ padding:80px 0; }
+    .prog-grid, .plans-grid, .results-grid{ grid-template-columns:1fr; }
+    .gal-grid{ grid-template-columns:repeat(2,1fr); }
+    .form-row{ grid-template-columns:1fr; }
+    .foot-grid{ grid-template-columns:1fr 1fr; gap:30px; }
+    .foot-brand img{ height:34px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+  :focus-visible{ outline:2px solid var(--yellow); outline-offset:3px; }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand">
+      <img src="logo.png" alt="PHYSIQUE_RAG-X logo">
+      <span class="brand-text">PHYSIQUE_RAG<span>_X</span></span>
+    </a>
+    <nav class="primary-nav">
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#founder">Founder</a></li>
+        <li><a href="#programs">Programs</a></li>
+        <li><a href="#transformation">100-Day</a></li>
+        <li><a href="#membership">Membership</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://wa.me/918248351561" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">WhatsApp</a>
+      <a href="#contact" class="btn btn-solid btn-sm">Join Now</a>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <a href="#about">About</a>
+  <a href="#founder">Founder</a>
+  <a href="#programs">Programs</a>
+  <a href="#transformation">100-Day</a>
+  <a href="#membership">Membership</a>
+  <a href="#schedule">Schedule</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#faq">FAQ</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <svg class="hero-x" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="0,0 40,0 200,180 200,200 160,200" fill="#c7ccd3"/>
+    <polygon points="200,0 160,0 0,180 0,200 40,200" fill="#f4c400"/>
+  </svg>
+  <div class="wrap hero-inner">
+    <img src="logo.png" alt="PHYSIQUE_RAG-X" class="hero-logo">
+    <p class="hero-sub">Chennai&nbsp;&middot;&nbsp;Strength &amp; Physique Lab</p>
+    <h1>Forge a body <em>built for war,</em><br>not just the mirror.</h1>
+    <p class="lead">Barbell strength, hard-earned muscle and real conditioning — coached by people who compete in what they teach. This is where average stops.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn btn-solid">Start Your Transformation</a>
+      <a href="#programs" class="btn btn-ghost">See Programs</a>
+    </div>
+    <div class="hero-strip">
+      <div class="cell"><div class="num">850+</div><div class="lbl">Members Trained</div></div>
+      <div class="cell"><div class="num">120+</div><div class="lbl">Transformations</div></div>
+      <div class="cell"><div class="num">6</div><div class="lbl">Years Strong</div></div>
+      <div class="cell"><div class="num">15</div><div class="lbl">Expert Coaches</div></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>Scroll</span><span class="line"></span></div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec about" id="about">
+  <div class="wrap about-grid">
+    <div class="about-copy reveal">
+      <p class="eyebrow">Why Physique_Rag-X</p>
+      <h2>Training built on <br>fundamentals, not fads.</h2>
+      <p>PHYSIQUE_RAG-X was built for people done with generic gym plans that go nowhere. We coach the barbell lifts, track your numbers, and hold you to a standard — so every session moves you closer to a body and a strength level you've actually earned.</p>
+      <p>No matter where you're starting from, our coaches build your program around your goal: raw strength, size, a leaner physique, or on-field performance.</p>
+      <ul class="about-list">
+        <li><span class="mark">01</span>Certified strength &amp; conditioning coaches on the floor, every session.</li>
+        <li><span class="mark">02</span>Programming built around your goal — not a one-size template.</li>
+        <li><span class="mark">03</span>Progress tracked: lifts, measurements, photos, body composition.</li>
+        <li><span class="mark">04</span>A training floor that pushes you — community that keeps you showing up.</li>
+      </ul>
+    </div>
+    <div class="about-panel reveal">
+      <p class="quote">"We don't sell memberships. We build <span>physiques</span> and we build <span>discipline</span> — the membership is just how you get in the door."</p>
+      <p class="attrib">— Coaching Philosophy, Physique_Rag-X</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section class="sec founder" id="founder">
+  <div class="wrap founder-grid">
+    <div class="founder-photo-wrap reveal">
+      <div class="founder-photo">
+        <!-- Swap the placeholder below for: <img src="ceo.jpg" alt="Founder & Head Coach"> -->
+        <div class="placeholder">
+          <div class="mono">X</div>
+          <p>Photo coming soon</p>
+        </div>
+      </div>
+      <div class="founder-tag">Founder &amp; Head Coach</div>
+    </div>
+    <div class="founder-copy reveal">
+      <p class="eyebrow">Meet The Founder</p>
+      <h3>Built the standard he trains everyone else on.</h3>
+      <div class="role">Founder &amp; Head Coach, Physique_Rag-X</div>
+      <p class="bio">Every program on this floor starts with what he'd run himself. No shortcuts, no guesswork — just coaching built on results.</p>
+      <p class="sign">From the first member to the hundred and fiftieth, the standard hasn't moved: show up, follow the program, track the numbers. He still coaches sessions on the floor every week.</p>
+      <div class="founder-stats">
+        <div><div class="n">6+</div><div class="l">Years Coaching</div></div>
+        <div><div class="n">850+</div><div class="l">Members Trained</div></div>
+        <div><div class="n">120+</div><div class="l">Transformations Led</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats" id="stats">
+  <div class="wrap">
+    <div class="stats-grid reveal">
+      <div class="stat-cell"><div class="n" data-count="850">0</div><div class="l">Members Trained</div></div>
+      <div class="stat-cell"><div class="n" data-count="120">0</div><div class="l">Transformations</div></div>
+      <div class="stat-cell"><div class="n" data-count="15">0</div><div class="l">Expert Coaches</div></div>
+      <div class="stat-cell"><div class="n" data-count="6">0</div><div class="l">Years Strong</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section class="sec programs" id="programs">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Training Programs</p>
+      <h2>Four paths. One standard.</h2>
+      <p>Every program runs on the same coaching quality — pick the one that matches where you want your body and performance to go.</p>
+    </div>
+    <div class="prog-grid stagger">
+      <div class="prog-card reveal" style="--i:0"><div class="icon"></div>
+        <div class="idx">01 / Strength</div>
+        <h3>Strength Foundations</h3>
+        <p>Squat, bench, deadlift and press — built on progressive overload so your numbers climb every block.</p>
+        <div class="tags"><span>Barbell</span><span>Beginner–Int</span><span>4x / week</span></div>
+      </div>
+      <div class="prog-card reveal" style="--i:1"><div class="icon"></div>
+        <div class="idx">02 / Hypertrophy</div>
+        <h3>Hypertrophy Block</h3>
+        <p>Volume-driven bodybuilding split for size and shape — the muscle-building core of the RAG-X method.</p>
+        <div class="tags"><span>Bodybuilding</span><span>All levels</span><span>5x / week</span></div>
+      </div>
+      <div class="prog-card reveal" style="--i:2"><div class="icon"></div>
+        <div class="idx">03 / Shred</div>
+        <h3>Shred Protocol</h3>
+        <p>Metabolic conditioning and resistance work paired with nutrition coaching to strip fat, keep muscle.</p>
+        <div class="tags"><span>Fat Loss</span><span>All levels</span><span>5–6x / week</span></div>
+      </div>
+      <div class="prog-card reveal" style="--i:3"><div class="icon"></div>
+        <div class="idx">04 / Athletic</div>
+        <h3>Athlete Engine</h3>
+        <p>Speed, power and functional conditioning for sport — built for athletes who need strength that transfers.</p>
+        <div class="tags"><span>Performance</span><span>Intermediate+</span><span>4x / week</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 100 DAY -->
+<section class="sec transform-sec" id="transformation">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Signature Program</p>
+      <h2>The 100-Day Transformation</h2>
+      <p>One structured block. Four phases. A physique and a strength base you'll actually keep — tracked from day one to day one hundred.</p>
+    </div>
+    <div class="phase-track stagger">
+      <div class="phase-row">
+        <div class="phase reveal" style="--i:0"><div class="dot">1</div>
+          <div class="days">Day 01–25</div>
+          <h4>Foundation</h4>
+          <p>Baseline assessment, movement screening and technique work. We set your starting numbers and your target.</p>
+        </div>
+        <div class="phase reveal" style="--i:1"><div class="dot">2</div>
+          <div class="days">Day 26–60</div>
+          <h4>Build &amp; Overload</h4>
+          <p>Progressive strength and hypertrophy blocks. Weekly load increases, nutrition dialled to your goal.</p>
+        </div>
+        <div class="phase reveal" style="--i:2"><div class="dot">3</div>
+          <div class="days">Day 61–85</div>
+          <h4>Sculpt &amp; Condition</h4>
+          <p>Higher-volume conditioning layered in to sharpen physique while holding onto the strength you've built.</p>
+        </div>
+        <div class="phase reveal" style="--i:3"><div class="dot">4</div>
+          <div class="days">Day 86–100</div>
+          <h4>Peak &amp; Reveal</h4>
+          <p>Taper, final measurements and transformation photos — plus your maintenance program going forward.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERSHIP -->
+<section class="sec membership" id="membership">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Membership</p>
+      <h2>Pick your access level.</h2>
+      <p>All plans include full gym floor access. Upgrade whenever you're ready for more coaching.</p>
+    </div>
+    <div class="plans-grid stagger">
+      <div class="plan reveal" style="--i:0">
+        <h3>Basic</h3>
+        <div class="price">₹1,999<sup>/mo</sup></div>
+        <div class="per">Billed monthly</div>
+        <ul>
+          <li>Full gym floor access</li>
+          <li>Locker &amp; shower facility</li>
+          <li>Standard operating hours</li>
+          <li>Free fitness assessment</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost">Choose Basic</a>
+      </div>
+      <div class="plan featured reveal" style="--i:1">
+        <h3>Pro</h3>
+        <div class="price">₹3,499<sup>/mo</sup></div>
+        <div class="per">Billed monthly</div>
+        <ul>
+          <li>Everything in Basic</li>
+          <li>Unlimited group classes</li>
+          <li>Monthly progress tracking</li>
+          <li>Diet guideline &amp; check-ins</li>
+        </ul>
+        <a href="#contact" class="btn btn-solid">Choose Pro</a>
+      </div>
+      <div class="plan reveal" style="--i:2">
+        <h3>Elite</h3>
+        <div class="price">₹6,999<sup>/mo</sup></div>
+        <div class="per">Billed monthly</div>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>2x personal training / week</li>
+          <li>Custom nutrition plan</li>
+          <li>Priority booking</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost">Choose Elite</a>
+      </div>
+      <div class="plan reveal" style="--i:3">
+        <h3>RAG-X 100</h3>
+        <div class="price">₹19,999<sup>/100d</sup></div>
+        <div class="per">One-time, full program</div>
+        <ul>
+          <li>Full 100-Day Transformation</li>
+          <li>Dedicated coach throughout</li>
+          <li>Nutrition + supplementation plan</li>
+          <li>Before/after photo &amp; measurement tracking</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost">Choose RAG-X 100</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="sec results" id="results">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Results</p>
+      <h2>Real transformations, tracked.</h2>
+      <p>A snapshot of members who put in the 100 days. Full galleries and stories available in the gym app.</p>
+    </div>
+    <div class="results-grid stagger">
+      <div class="result-card reveal" style="--i:0">
+        <div class="result-visual"><div class="split"><div class="before"></div><div class="after"></div></div><div class="vs">VS</div></div>
+        <div class="result-body">
+          <div class="name">Arun K.</div>
+          <div class="meta">−11kg · 100 Days · Shred Protocol</div>
+          <p>Came in for fat loss, stayed for the strength numbers he never expected to hit.</p>
+        </div>
+      </div>
+      <div class="result-card reveal" style="--i:1">
+        <div class="result-visual"><div class="split"><div class="before"></div><div class="after"></div></div><div class="vs">VS</div></div>
+        <div class="result-body">
+          <div class="name">Divya R.</div>
+          <div class="meta">+4.5kg lean mass · Hypertrophy Block</div>
+          <p>First real muscle gain after years of inconsistent home workouts.</p>
+        </div>
+      </div>
+      <div class="result-card reveal" style="--i:2">
+        <div class="result-visual"><div class="split"><div class="before"></div><div class="after"></div></div><div class="vs">VS</div></div>
+        <div class="result-body">
+          <div class="name">Suresh M.</div>
+          <div class="meta">+42kg total · Strength Foundations</div>
+          <p>Went from zero barbell experience to a triple-digit deadlift PR in 100 days.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="sec schedule" id="schedule">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Weekly Schedule</p>
+      <h2>Plan your week on the floor.</h2>
+      <p>Open-gym hours run daily 5:30 AM – 10:00 PM. Coached sessions below.</p>
+    </div>
+    <div class="table-wrap reveal">
+      <table class="sched">
+        <thead>
+          <tr><th>Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>6:00 AM</th><td>Strength</td><td>Athlete Engine</td><td>Strength</td><td>Athlete Engine</td><td>Strength</td><td>Open Gym</td><td class="rest">Closed</td></tr>
+          <tr><th>9:00 AM</th><td>Hypertrophy</td><td>Shred Protocol</td><td>Hypertrophy</td><td>Shred Protocol</td><td>Hypertrophy</td><td>Hypertrophy</td><td class="rest">Closed</td></tr>
+          <tr><th>5:30 PM</th><td>Shred Protocol</td><td>Strength</td><td>Shred Protocol</td><td>Strength</td><td>Shred Protocol</td><td>Mobility &amp; Recovery</td><td class="rest">Closed</td></tr>
+          <tr><th>7:00 PM</th><td>Athlete Engine</td><td>Hypertrophy</td><td>Athlete Engine</td><td>Hypertrophy</td><td>Open Gym</td><td>Open Gym</td><td class="rest">Closed</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec testimonials" id="testimonials">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-left:auto; margin-right:auto; text-align:center;">
+      <p class="eyebrow" style="justify-content:center;">Member Voices</p>
+      <h2>They showed up. It worked.</h2>
+    </div>
+    <div class="tst-wrap reveal">
+      <div class="tst-slide active">
+        <div class="tst-stars">★★★★★</div>
+        <p class="txt">"I've joined three gyms before this one. RAG-X is the first place a coach actually corrected my form every session — that's the difference."</p>
+        <div class="tst-who"><b>Arun K.</b> — Shred Protocol Member</div>
+      </div>
+      <div class="tst-slide">
+        <div class="tst-stars">★★★★★</div>
+        <p class="txt">"The 100-Day program gave me structure I never had on my own. I knew exactly what to do walking in, every single day."</p>
+        <div class="tst-who"><b>Divya R.</b> — RAG-X 100 Graduate</div>
+      </div>
+      <div class="tst-slide">
+        <div class="tst-stars">★★★★★</div>
+        <p class="txt">"Hit a deadlift PR I didn't think was possible for me. The coaches here actually know how to program strength work."</p>
+        <div class="tst-who"><b>Suresh M.</b> — Strength Foundations Member</div>
+      </div>
+      <div class="tst-dots" id="tstDots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="sec gallery" id="gallery">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Gallery</p>
+      <h2>Inside the floor.</h2>
+    </div>
+    <div class="gal-grid stagger">
+      <div class="gal-item wide tall reveal" style="--i:0; --g1:#26210a; --g2:#0f0e08;"><span>Free-weight Floor</span></div>
+      <div class="gal-item reveal" style="--i:1; --g1:#232427; --g2:#101113;"><span>Squat Rack Row</span></div>
+      <div class="gal-item reveal" style="--i:2; --g1:#232427; --g2:#101113;"><span>Coaching Session</span></div>
+      <div class="gal-item tall reveal" style="--i:3; --g1:#26210a; --g2:#0f0e08;"><span>100-Day Wall</span></div>
+      <div class="gal-item reveal" style="--i:4; --g1:#232427; --g2:#101113;"><span>Group Class</span></div>
+      <div class="gal-item wide reveal" style="--i:5; --g1:#232427; --g2:#101113;"><span>Conditioning Zone</span></div>
+      <div class="gal-item reveal" style="--i:6; --g1:#26210a; --g2:#0f0e08;"><span>Locker Room</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec faq" id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">FAQ</p>
+      <h2>Questions, answered.</h2>
+    </div>
+    <div class="faq-list stagger">
+      <div class="faq-item reveal" style="--i:0">
+        <button class="faq-q">Do I need prior gym experience to join? <span class="plus">+</span></button>
+        <div class="faq-a"><p>No. Every new member starts with a free fitness assessment, and coaches build your program to your current level — whether that's your first barbell session or your hundredth.</p></div>
+      </div>
+      <div class="faq-item reveal" style="--i:1">
+        <button class="faq-q">What's included in the 100-Day Transformation? <span class="plus">+</span></button>
+        <div class="faq-a"><p>A dedicated coach, structured programming across all four phases, a nutrition and supplementation plan, and full progress tracking with before/after photos and measurements.</p></div>
+      </div>
+      <div class="faq-item reveal" style="--i:2">
+        <button class="faq-q">Can I switch programs after I join? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Yes. Talk to your coach and we'll rebuild your plan around Strength, Hypertrophy, Shred or Athlete Engine as your goals change.</p></div>
+      </div>
+      <div class="faq-item reveal" style="--i:3">
+        <button class="faq-q">What are the gym timings? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Open gym runs 5:30 AM – 10:00 PM daily except Sunday. Coached sessions follow the weekly schedule listed above.</p></div>
+      </div>
+      <div class="faq-item reveal" style="--i:4">
+        <button class="faq-q">Do you offer trial sessions? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Yes — message us on WhatsApp and we'll set you up with a floor tour and a trial session before you commit to a plan.</p></div>
+      </div>
+      <div class="faq-item reveal" style="--i:5">
+        <button class="faq-q">Is nutrition coaching included in every plan? <span class="plus">+</span></button>
+        <div class="faq-a"><p>Basic and Pro include general diet guidelines. Elite and RAG-X 100 include a fully custom nutrition plan built around your training block.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec contact" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-info reveal">
+      <p class="eyebrow">Get In Touch</p>
+      <h2>Walk in. Or message first.</h2>
+      <p style="color:var(--text-dim); margin-top:16px; line-height:1.6;">Have questions about a program or membership? Reach out and a coach will get back to you directly.</p>
+      <div class="row">
+        <div class="ic">☎</div>
+        <div><h4>Phone</h4><a href="tel:+918248351561">+91 82483 51561</a></div>
+      </div>
+      <div class="row">
+        <div class="ic">✉</div>
+        <div><h4>Email</h4><a href="mailto:vinothmn1999@gmail.com">vinothmn1999@gmail.com</a></div>
+      </div>
+      <div class="row">
+        <div class="ic">💬</div>
+        <div><h4>WhatsApp</h4><a href="https://wa.me/918248351561" target="_blank" rel="noopener">+91 82483 51561</a></div>
+      </div>
+      <div class="row">
+        <div class="ic">📍</div>
+        <div><h4>Location</h4><span>Chennai, Tamil Nadu</span></div>
+      </div>
+      <div class="contact-social">
+        <a href="https://wa.me/918248351561" target="_blank" rel="noopener">WA</a>
+        <a href="tel:+918248351561">Call</a>
+        <a href="mailto:vinothmn1999@gmail.com">Mail</a>
+      </div>
+    </div>
+
+    <form class="enquiry reveal" id="enquiryForm">
+      <div class="form-row">
+        <div class="field"><label for="fname">Full Name</label><input id="fname" name="name" type="text" required placeholder="Your name"></div>
+        <div class="field"><label for="fphone">Phone Number</label><input id="fphone" name="phone" type="tel" required placeholder="+91"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label for="femail">Email</label><input id="femail" name="email" type="email" placeholder="you@email.com"></div>
+        <div class="field"><label for="fgoal">Primary Goal</label>
+          <select id="fgoal" name="goal">
+            <option>Strength Foundations</option>
+            <option>Hypertrophy Block</option>
+            <option>Shred Protocol</option>
+            <option>Athlete Engine</option>
+            <option>100-Day Transformation</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="fmsg">Message</label><textarea id="fmsg" name="message" placeholder="Tell us about your goals..."></textarea></div>
+      <div class="form-foot">
+        <button type="submit" class="btn btn-solid">Send Enquiry</button>
+        <a href="https://wa.me/918248351561" target="_blank" rel="noopener" class="btn btn-ghost">Enquire on WhatsApp</a>
+        <span class="form-status" id="formStatus"></span>
+      </div>
+      <p class="form-note">We'll open your email app with this enquiry pre-filled to vinothmn1999@gmail.com — nothing is sent automatically.</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="logo.png" alt="PHYSIQUE_RAG-X"></div>
+        <p class="foot-tag">Strength, physique and performance training in Chennai. Build. Train. Transform.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Explore</h5>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#programs">Programs</a></li>
+          <li><a href="#membership">Membership</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Support</h5>
+        <ul>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#schedule">Schedule</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="tel:+918248351561">+91 82483 51561</a></li>
+          <li><a href="mailto:vinothmn1999@gmail.com">vinothmn1999@gmail.com</a></li>
+          <li><a href="https://wa.me/918248351561" target="_blank" rel="noopener">WhatsApp Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© <span id="year"></span> PHYSIQUE_RAG-X. All rights reserved.</p>
+      <p>Build · Train · Transform</p>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/918248351561" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 32 32" fill="#fff"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.36.66 4.57 1.8 6.46L4 29l7.7-1.75a11.94 11.94 0 0 0 4.32.8h.01c6.62 0 12.02-5.4 12.02-12.02C28.05 8.4 22.65 3 16.02 3zm0 21.86h-.01a9.9 9.9 0 0 1-5.05-1.39l-.36-.21-4.5 1.02 1.06-4.38-.24-.38a9.86 9.86 0 0 1-1.5-5.5c0-5.46 4.44-9.9 9.9-9.9 2.65 0 5.13 1.03 7 2.9a9.83 9.83 0 0 1 2.9 7c0 5.46-4.44 9.84-9.9 9.84zm5.44-7.41c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.46-.87-.78-1.46-1.73-1.63-2.03-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.2 5.09 4.49.71.31 1.27.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/></svg>
+</a>
+
+<script>
+  // header scroll state
+  const header = document.getElementById('siteHeader');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 30);
+  document.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  // mobile nav
+  const burger = document.getElementById('burger');
+  const mobileNav = document.getElementById('mobileNav');
+  burger.addEventListener('click', () => {
+    const open = mobileNav.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobileNav.classList.remove('open');
+    burger.classList.remove('open');
+    document.body.style.overflow = '';
+  }));
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // animated stat counters
+  const counters = document.querySelectorAll('.stat-cell .n');
+  const counterIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.count, 10);
+      const dur = 1400;
+      const start = performance.now();
+      function tick(now){
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * target);
+        if (p < 1) requestAnimationFrame(tick); else el.textContent = target + (target >= 100 ? '+' : '');
+      }
+      requestAnimationFrame(tick);
+      counterIO.unobserve(el);
+    });
+  }, { threshold: 0.4 });
+  counters.forEach(c => counterIO.observe(c));
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(other => {
+        other.classList.remove('open');
+        other.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if (!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // testimonial slider
+  const slides = document.querySelectorAll('.tst-slide');
+  const dotsWrap = document.getElementById('tstDots');
+  let tIdx = 0, tTimer;
+  slides.forEach((_, i) => {
+    const b = document.createElement('button');
+    if (i === 0) b.classList.add('active');
+    b.addEventListener('click', () => showSlide(i));
+    dotsWrap.appendChild(b);
+  });
+  function showSlide(i){
+    slides[tIdx].classList.remove('active');
+    dotsWrap.children[tIdx].classList.remove('active');
+    tIdx = i;
+    slides[tIdx].classList.add('active');
+    dotsWrap.children[tIdx].classList.add('active');
+  }
+  function nextSlide(){ showSlide((tIdx + 1) % slides.length); }
+  tTimer = setInterval(nextSlide, 5500);
+
+  // contact form -> mailto
+  const form = document.getElementById('enquiryForm');
+  const status = document.getElementById('formStatus');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const name = data.get('name') || '';
+    const phone = data.get('phone') || '';
+    const email = data.get('email') || '';
+    const goal = data.get('goal') || '';
+    const message = data.get('message') || '';
+    const subject = encodeURIComponent('Gym Enquiry — ' + name);
+    const body = encodeURIComponent(
+      'Name: ' + name + '\n' +
+      'Phone: ' + phone + '\n' +
+      'Email: ' + email + '\n' +
+      'Goal: ' + goal + '\n' +
+      'Message: ' + message
+    );
+    window.location.href = 'mailto:vinothmn1999@gmail.com?subject=' + subject + '&body=' + body;
+    status.textContent = 'Opening your email app…';
+    setTimeout(() => status.textContent = '', 4000);
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
